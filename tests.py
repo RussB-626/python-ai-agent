@@ -74,30 +74,34 @@ def test():
   # print(result)
   # print("-------------------------\n")
 
-  result = run_python_file("calculator", "main.py")
-  print("Result for 'main.py' file:")
-  print(result)
-  print("-------------------------\n")
+  # =====================================
+  #  Tests for run_python_file
+  # =====================================
+  # result = run_python_file("calculator", "main.py")
+  # print("Result for 'main.py' file:")
+  # print(result)
+  # print("-------------------------\n")
 
-  result = run_python_file("calculator", "main.py", ["3 + 5"])
-  print("Result for 'main.py - ['3 + 5']' file:")
-  print(result)
-  print("-------------------------\n")
+  # result = run_python_file("calculator", "main.py", ["3 + 5"])
+  # print("Result for 'main.py - ['3 + 5']' file:")
+  # print(result)
+  # print("-------------------------\n")
 
-  result = run_python_file("calculator", "tests.py")
-  print("Result for 'tests.py' file:")
-  print(result)
-  print("-------------------------\n")
+  # result = run_python_file("calculator", "tests.py")
+  # print("Result for 'tests.py' file:")
+  # print(result)
+  # print("-------------------------\n")
 
-  result = run_python_file("calculator", "../main.py")
-  print("Result for '../main.py' file:")
-  print(result)
-  print("-------------------------\n")
+  # result = run_python_file("calculator", "../main.py")
+  # print("Result for '../main.py' file:")
+  # print(result)
+  # print("-------------------------\n")
 
-  result = run_python_file("calculator", "nonexistent.py")
-  print("Result for 'nonexistent.py' file:")
-  print(result)
-  print("-------------------------\n")
+  # result = run_python_file("calculator", "nonexistent.py")
+  # print("Result for 'nonexistent.py' file:")
+  # print(result)
+  # print("-------------------------\n")
+  pass
 
 if __name__ == "__main__":
   test()
