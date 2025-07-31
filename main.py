@@ -1,6 +1,7 @@
 import os
 import sys
 
+from config import *
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
@@ -35,7 +36,16 @@ def main():
     types.Content(role="user", parts=[types.Part(text=user_prompt)]),
   ]
 
-  generate_content(client, messages, verbose)
+  try:
+    for _ in range(MAX_CALLS):
+      result = generate_content(client, messages, verbose)
+      if result:
+         print("\nFinal response:\n" + result)
+         break
+  except Exception as e:
+     print(f"Error: {e}")
+
+
 
 def generate_content(client, messages, verbose):
   response = client.models.generate_content(
@@ -56,18 +66,41 @@ def generate_content(client, messages, verbose):
 
   function_responses = []
   for function_call_part in response.function_calls:
-     function_call_result = call_function(function_call_part, verbose)
-     if(
-        not function_call_result.parts
-        or not function_call_result.parts[0].function_response
-     ):
-        raise Exception("empty function call result")
-     if verbose:
-        print(f"-> {function_call_result.parts[0].function_response.response}")
-  function_responses.append(function_call_result.parts[0])
+    function_call_result = call_function(function_call_part, verbose)
+    if(
+      not function_call_result.parts
+      or not function_call_result.parts[0].function_response
+    ):
+      raise Exception("empty function call result")
+    if verbose:
+      print(f"-> {function_call_result.parts[0].function_response.response}")
+    function_responses.append(function_call_result.parts[0])
 
   if not function_responses:
      raise Exception("no function responses generated, exiting.")
+  
+  for candidate in response.candidates:
+     messages.append(candidate.content)
+
+  parts = []
+  for func_response in function_responses:
+    part = types.Part(
+      function_response=types.FunctionResponse(
+          name=func_response.function_response.name,
+          response=func_response.function_response.response
+      )
+    )
+    parts.append(part)
+
+    tool_message = types.Content(
+       role="tool",
+       parts=parts
+    )
+
+    messages.append(tool_message)
+    pass
+
+
 
 if __name__ == "__main__":
     main()
