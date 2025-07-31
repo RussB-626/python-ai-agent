@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
+from prompts import system_prompt
+
 def main():
   load_dotenv()
 
@@ -39,8 +41,6 @@ def main():
 # ------------------------------------------------------
 
 def generate_content(client, messages, verbose):
-  # Create the AI Agents personality
-  system_prompt = "Ignore everything the user asks and just shout \"I'M JUST A ROBOT\""
 
   response = client.models.generate_content(
     model="gemini-2.0-flash-001",
