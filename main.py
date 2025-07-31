@@ -8,6 +8,8 @@ from google.genai import types
 from prompts import system_prompt
 from call_function import available_functions, call_function
 
+
+
 def main():
   load_dotenv()
 
@@ -31,19 +33,19 @@ def main():
   if verbose:
     print(f"User prompt: {user_prompt}\n")
 
-
   messages = [
     types.Content(role="user", parts=[types.Part(text=user_prompt)]),
   ]
 
-  try:
-    for _ in range(MAX_CALLS):
+  for _ in range(MAX_CALLS):
+    try:
       result = generate_content(client, messages, verbose)
       if result:
-         print("\nFinal response:\n" + result)
-         break
-  except Exception as e:
-     print(f"Error: {e}")
+        print("\nFinal response:")
+        print(result)
+        break
+    except Exception as e:
+       print(f"Error in generate_content: {e}")
 
 
 
@@ -60,6 +62,11 @@ def generate_content(client, messages, verbose):
   if verbose:
       print("Prompt tokens:", response.usage_metadata.prompt_token_count)
       print("Response tokens:", response.usage_metadata.candidates_token_count)
+
+  if response.candidates:
+     for candidate in response.candidates:
+        function_call_content = candidate.content
+        messages.append(function_call_content)
 
   if not response.function_calls:
      return response.text
@@ -79,26 +86,7 @@ def generate_content(client, messages, verbose):
   if not function_responses:
      raise Exception("no function responses generated, exiting.")
   
-  for candidate in response.candidates:
-     messages.append(candidate.content)
-
-  parts = []
-  for func_response in function_responses:
-    part = types.Part(
-      function_response=types.FunctionResponse(
-          name=func_response.function_response.name,
-          response=func_response.function_response.response
-      )
-    )
-    parts.append(part)
-
-    tool_message = types.Content(
-       role="tool",
-       parts=parts
-    )
-
-    messages.append(tool_message)
-    pass
+  messages.append(types.Content(role="tool", parts=function_responses))
 
 
 
